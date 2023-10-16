@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ray</title>
+    <title>wilhelm</title>
     <link rel="icon" href="https://emojicdn.elk.sh/🩻" />
 
     <!-- Alpine.js -->
@@ -22,10 +22,10 @@
   <body x-data>
     <header>
       <div class="container">
-        <h1>Ray</h1>
+        <h1>wilhelm</h1>
         <button
-          x-bind:disabled="$store.ray.messages.length === 0"
-          @click="$store.ray.clear()"
+          x-bind:disabled="$store.wilhelm.messages.length === 0"
+          @click="$store.wilhelm.clear()"
         >
           Clear
         </button>
@@ -33,7 +33,7 @@
     </header>
     <main>
       <div class="container">
-        <template x-for="message in $store.ray.messages" :key="message.id">
+        <template x-for="message in $store.wilhelm.messages" :key="message.id">
           <div x-show="true" x-transition>
             <small
               x-text="new Date().toLocaleTimeString()"
@@ -51,7 +51,7 @@
 
     <script>
       document.addEventListener("alpine:init", () => {
-        Alpine.store("ray", {
+        Alpine.store("wilhelm", {
           messages: [],
 
           add(message) {
@@ -73,7 +73,10 @@
 
         // Listen for messages
         socket.addEventListener("message", function (event) {
-          Alpine.store("ray").add({ id: event.timeStamp, data: event.data });
+          Alpine.store("wilhelm").add({
+            id: event.timeStamp,
+            data: event.data,
+          });
         });
       });
     </script>
