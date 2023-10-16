@@ -33,15 +33,24 @@
     </header>
     <main>
       <div class="container">
-        <template x-for="message in $store.wilhelm.messages" :key="message.id">
-          <div x-show="true" x-transition>
-            <small
-              x-text="new Date().toLocaleTimeString()"
-              class="pico-color-grey-250"
-            ></small>
+        <template
+          x-for="message in $store.wilhelm.messages"
+          :key="message.uuid"
+        >
+          <div>
+            <div class="pico-color-grey-450">
+              <small
+                x-text="new Date().toLocaleTimeString('de-DE')"
+                class="pico-color-grey-250"
+              ></small>
+              <br />
+              <small x-text="message.payloads[0].origin.file"></small>
+              <span>:</span>
+              <small x-text="message.payloads[0].origin.line_number"></small>
+            </div>
             <pre
-              x-text="message.data"
-              style="padding: 10px; margin-top: 4px"
+              x-html="message.payloads[0].content.values[0]"
+              style="padding: 14px; margin-top: 8px"
             ></pre>
             <hr />
           </div>
@@ -73,10 +82,9 @@
 
         // Listen for messages
         socket.addEventListener("message", function (event) {
-          Alpine.store("wilhelm").add({
-            id: event.timeStamp,
-            data: event.data,
-          });
+          const data = JSON.parse(event.data);
+          console.log(data);
+          Alpine.store("wilhelm").add(data);
         });
       });
     </script>
