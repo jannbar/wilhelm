@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ray</title>
+    <link rel="icon" href="https://emojicdn.elk.sh/🩻" />
+
+    <!-- Alpine.js -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+
+    <!-- Pico CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css"
+    />
+  </head>
+  <body x-data>
+    <header>
+      <div class="container">
+        <h1>Ray</h1>
+        <button
+          x-bind:disabled="$store.ray.messages.length === 0"
+          @click="$store.ray.clear()"
+        >
+          Clear
+        </button>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <template x-for="message in $store.ray.messages" :key="message.id">
+          <div x-show="true" x-transition>
+            <small
+              x-text="new Date().toLocaleTimeString()"
+              class="pico-color-grey-250"
+            ></small>
+            <pre
+              x-text="message.data"
+              style="padding: 10px; margin-top: 4px"
+            ></pre>
+            <hr />
+          </div>
+        </template>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.store("ray", {
+          messages: [],
+
+          add(message) {
+            this.messages = [message, ...this.messages];
+          },
+
+          clear() {
+            this.messages = [];
+          },
+        });
+      });
+
+      window.addEventListener("load", () => {
+        const socket = new WebSocket("ws://localhost:23517");
+
+        socket.addEventListener("open", function (event) {
+          socket.send("client connected to server");
+        });
+
+        // Listen for messages
+        socket.addEventListener("message", function (event) {
+          Alpine.store("ray").add({ id: event.timeStamp, data: event.data });
+        });
+      });
+    </script>
+  </body>
+</html>
