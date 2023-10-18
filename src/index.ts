@@ -1,37 +1,38 @@
-import express from "express";
-import WebSocket from "ws";
-import http from "http";
-import path from "path";
+import http from 'http'
+import path from 'path'
+import express from 'express'
+import WebSocket from 'ws'
 
-const app = express();
-const port = 23517;
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const port = 23517
 
-app.use(express.json());
+const app = express()
+const server = http.createServer(app)
+const wss = new WebSocket.Server({ server })
 
-wss.on("connection", (ws) => {
-  console.log("establish websocket connection");
+app.use(express.json())
 
-  ws.on("message", (message) => {
-    console.log("received: %s", message);
-  });
-});
+wss.on('connection', (ws) => {
+    console.log('Established websocket connection')
 
-app.get("/", (req, res) => {
-  res.sendFile(path.resolve(__dirname, `../public/index.html`));
-});
+    ws.on('message', (message) => {
+        console.log('Received: %s', message)
+    })
+})
 
-app.post("/", (req, res) => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(req.body));
-    }
-  });
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, `../public/index.html`))
+})
 
-  res.sendStatus(200);
-});
+app.post('/', (req, res) => {
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(req.body))
+        }
+    })
+
+    res.sendStatus(200)
+})
 
 server.listen(port, () =>
-  console.log(`http server is listening on http://localhost:${port}`)
-);
+    console.log(`Server is listening on http://localhost:${port}`)
+)
