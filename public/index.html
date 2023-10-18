@@ -1,92 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wilhelm</title>
-    <link rel="icon" href="https://emojicdn.elk.sh/🩻" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>wilhelm</title>
+        <link rel="icon" href="https://emojicdn.elk.sh/🩻" />
 
-    <!-- Alpine.js -->
-    <script src="//unpkg.com/alpinejs" defer></script>
+        <!-- Alpine.js -->
+        <script src="//unpkg.com/alpinejs" defer></script>
 
-    <!-- Pico CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css"
-    />
-  </head>
-  <body x-data>
-    <header>
-      <div class="container">
-        <h1>wilhelm</h1>
-        <button
-          x-bind:disabled="$store.wilhelm.messages.length === 0"
-          @click="$store.wilhelm.clear()"
-        >
-          Clear
-        </button>
-      </div>
-    </header>
-    <main>
-      <div class="container">
-        <template
-          x-for="message in $store.wilhelm.messages"
-          :key="message.uuid"
-        >
-          <div>
-            <div class="pico-color-grey-450">
-              <small
-                x-text="new Date().toLocaleTimeString('de-DE')"
-                class="pico-color-grey-250"
-              ></small>
-              <br />
-              <small x-text="message.payloads[0].origin.file"></small>
-              <span>:</span>
-              <small x-text="message.payloads[0].origin.line_number"></small>
+        <!-- Pico CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css"
+        />
+    </head>
+    <body x-data>
+        <!-- <header>
+            <div class="container">
+                <h1>wilhelm</h1>
+                <button
+                    x-bind:disabled="$store.wilhelm.messages.length === 0"
+                    @click="$store.wilhelm.clear()"
+                >
+                    Clear
+                </button>
             </div>
-            <pre
-              x-html="message.payloads[0].content.values[0]"
-              style="padding: 14px; margin-top: 8px"
-            ></pre>
-            <hr />
-          </div>
-        </template>
-      </div>
-    </main>
+        </header> -->
+        <main>
+            <div class="container">
+                <div
+                    style="
+                        margin-bottom: 24px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    "
+                >
+                    <h2 style="margin-bottom: 0">wilhelm</h2>
+                    <button
+                        class="secondary"
+                        :disabled="$store.wilhelm.messages.length === 0"
+                        @click="$store.wilhelm.clear()"
+                    >
+                        Clear
+                    </button>
+                </div>
+                <template
+                    x-for="message in $store.wilhelm.messages"
+                    :key="message.uuid"
+                >
+                    <div>
+                        <div class="pico-color-grey-450">
+                            <small
+                                x-text="new Date().toLocaleTimeString('de-DE')"
+                                class="pico-color-grey-250"
+                            ></small>
+                            <br />
+                            <small
+                                x-text="message.payloads[0].origin.file"
+                            ></small>
+                            <span>:</span>
+                            <small
+                                x-text="message.payloads[0].origin.line_number"
+                            ></small>
+                        </div>
+                        <pre
+                            x-html="message.payloads[0].content.values[0]"
+                            style="padding: 14px; margin-top: 8px"
+                        ></pre>
+                        <hr />
+                    </div>
+                </template>
+            </div>
+        </main>
 
-    <script>
-      document.addEventListener("alpine:init", () => {
-        Alpine.store("wilhelm", {
-          messages: [],
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('wilhelm', {
+                    messages: [],
 
-          add(message) {
-            this.messages = [message, ...this.messages];
-          },
+                    add(message) {
+                        this.messages = [message, ...this.messages]
+                    },
 
-          clear() {
-            this.messages = [];
-          },
-        });
-      });
+                    clear() {
+                        this.messages = []
+                    },
+                })
+            })
 
-      window.addEventListener("load", () => {
-        const socket = new WebSocket("ws://localhost:23517");
+            window.addEventListener('load', () => {
+                const socket = new WebSocket('ws://localhost:23517')
 
-        socket.addEventListener("open", function (event) {
-          socket.send("client connected to server");
-        });
+                socket.addEventListener('open', function (event) {
+                    socket.send('Client connected to server')
+                })
 
-        // Listen for messages
-        socket.addEventListener("message", function (event) {
-          const data = JSON.parse(event.data);
-          console.log(data);
-          Alpine.store("wilhelm").add(data);
-        });
-      });
-    </script>
-  </body>
+                // Listen for messages
+                socket.addEventListener('message', function (event) {
+                    const data = JSON.parse(event.data)
+                    Alpine.store('wilhelm').add(data)
+                })
+            })
+        </script>
+    </body>
 </html>
